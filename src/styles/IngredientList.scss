@@ -1,0 +1,29 @@
+.input-field {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+}
+
+.remove-button {
+    background-color: #ff2121;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 1em;
+    padding: 0.5em;
+    margin: 0.5em;
+
+    &:disabled {
+        background-color: #ccc;
+    }
+}
+
+.ingredient-button {
+    background-color: #26ff00;
+    border: none;
+    border-radius: 0.1rem;
+    color: rgb(0, 0, 0);
+    font-size: 1.5em;
+    padding: 0.5em;
+    margin: 0.5em;
+}
