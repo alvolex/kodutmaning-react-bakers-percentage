@@ -7,7 +7,6 @@ type Props = {
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement>,
     id: number,
-    changeType: "name" | "weight"
   ) => void;
 };
 
@@ -24,13 +23,15 @@ const InputField: React.FC<Props> = ({
           placeholder="Flour"
           value={isLocked ? "Flour" : name}
           disabled={isLocked}
-          onChange={(e) => handleChange(e, id, "name")}
+          name="name"
+          onChange={(e) => handleChange(e, id)}
         />
         <input
           type="number"
           placeholder="Weight"
           value={weight.toString()}
-          onChange={(e) => handleChange(e, id, "weight")}
+          name="weight"
+          onChange={(e) => handleChange(e, id)} 
         />
         <input
           type="text"

@@ -4,28 +4,38 @@ import "../styles/IngredientList.scss";
 
 /* 
     Getting started:
-    You will need to clone the repo and run "npm install" and "npm start" to install the needed packages and then start the project.
+    You will need to clone the repo and run either "npm install" and "npm start" or "yarn" and "yarn start" to install the needed packages and then start the project.
+    The project will be accesible at localhost://3000
     The only component you need to change is IngredientList.tsx. You can find it in the src/components folder.
     Feel free to add any other files you need. You can also change the styles in the styles folder.
     The InputField.tsx component will handle changes to the input fields. You don't need to change it unless you want to.
 
+    This challenge is a CRUD app quite similar to a to-do list, but instead of tasks we have ingredients that we have to do calculations on.
+    
     Info:
-    - The first ingredient is always flour and will be locked, you can only change the weight of it.
-    - Flour weight is always considered 100%. The other ingredients are calculated based on the flour weight.
+    - The first ingredient should always be flour and will be locked, you can only change the weight of this field.
+    - Flour weight is always considered 100%. The other ingredients are calculated based on the flour weight. (Example further down)
 
-    More info:
+    More info about baker percentages:
     https://en.wikipedia.org/wiki/Baker_percentage
+
+    Your task is to fill in the following functions:
+    - calculatePercentages
+    - calculateWeights
+    - addIngredient (bonus)
+    - removeIngredient (bonus)
 
     Challenges:
     1. Calculate the percentages of the different ingredients based on the flour weight of all the ingredients in the ingredientList.
     2. If you change the weight of an ingredient, recalculate the percentage of that ingredient.
     3. If the flour weight changes, calculate the new weights of the other ingredients based on their percentages.
     Example:
-      If we start off with 100g of flour and 5g of yeast, the yeast percentage is 5%.
-      If we change the flour weight to 200g, the yeast weight should now be 10g, since that's 5% of 200.
+      If we start off with 100g of flour, 5g of yeast, and 200g of water, then the yeast percentage is 5% and water is 200%.
+      If we change the flour weight to 200g, the yeast weight should now be 10g, since that's 5% of 200 and the water should be 400g.
 
-    3. Add a button to remove an ingredient
-    4. Add a button to add a new ingredient. Make sure to give it a unique id.
+    Bonus challenges:
+    1. Add logic to the "Remove" button.
+    2. Add logic to the "New ingredient" button. Make sure to give it a unique id.
 */
 
 export type Ingredient = {
@@ -34,6 +44,8 @@ export type Ingredient = {
   percentage: number;
   id: number;
 };
+
+type IngredientKeys = keyof Ingredient;
 
 const ingredientExampleData: Ingredient[] = [
   {
@@ -63,53 +75,32 @@ const ingredientExampleData: Ingredient[] = [
 ];
 
 const IngredientList = () => {
-  const [ingredientList, setIngredientList] = useState<Ingredient[]>(ingredientExampleData || []);
+  const [ingredientList, setIngredientList] = useState<Ingredient[]>( ingredientExampleData || []);
 
-  //Helper function that handles the change of an input field.
-  //You don't need to change this function.
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: number,
-    changeType: "name" | "weight"
-  ) => {
-    e.preventDefault();
-    const newIngredientList = ingredientList.map((ingredient) => {
-      if (ingredient.id === id) {
-        switch (changeType) {
-          case "name":
-            ingredient.name = e.target.value;
-            break;
-          case "weight":
-            ingredient.weight = Number(e.target.value);
-            break;
-        }
-      }
-      return ingredient;
-    });
-    setIngredientList(newIngredientList);
+  const calculatePercentages = (ingredientArray: Ingredient[]) => {
+    /* 
+      Challenge: Calculate percentages based on flour weight and then call the setIngredientList
+      function with the updated values. 
+    */
+    const flourWeight = ingredientArray[0].weight;
 
-    if (changeType === "name") return;
-    id === 0 ? calculateWeights() : calculatePercentages();
-  };
-
-  const calculatePercentages = () => {
-    //Challenge: Calculate percentages based on flour weight
-    const flourWeight = ingredientList[0].weight;
-
-    //EXAMPLE CODE:
-    const newIngredientList = ingredientList.map((ingredient) => {
+    //EXAMPLE SOLUTION:
+    const newIngredientList = ingredientArray.map((ingredient) => {
       ingredient.percentage = (ingredient.weight / flourWeight) * 100;
       return ingredient;
     });
     setIngredientList(newIngredientList);
   };
 
-  const calculateWeights = () => {
-    //Challenge: If the flour weight changes, calculate the new weights of the other ingredients.
-    const flourWeight = ingredientList[0].weight;
+  const calculateWeights = (ingredientArray: Ingredient[]) => {
+    /*  
+      Challenge: If the flour weight changes, calculate the new weights of the other ingredients and then call the setIngredientList
+      function with the updated values. 
+    */
+    const flourWeight = ingredientArray[0].weight;
 
-    //EXAMPLE CODE:
-    const newIngredientList = ingredientList.map((ingredient) => {
+    //EXAMPLE SOLUTION:
+    const newIngredientList = ingredientArray.map((ingredient) => {
       ingredient.weight = (ingredient.percentage / 100) * flourWeight;
       return ingredient;
     });
@@ -117,9 +108,9 @@ const IngredientList = () => {
   };
 
   const addIngredient = () => {
-    //Bonus challenge: Add a button to add a new ingredient. Make sure to give it a unique id.
+    //Bonus challenge: Add logic so that this function adds a new ingredient to the list. Make sure to give it a unique id.
 
-    //EXAMPLE CODE:
+    //EXAMPLE SOLUTION:
     const newIngredientList = [...ingredientList];
     newIngredientList.push({
       name: "New ingredient",
@@ -131,16 +122,16 @@ const IngredientList = () => {
   };
 
   const removeIngredient = (id: number) => {
-    //Bonus challenge: Add a button to remove an ingredient
+    //Bonus challenge: Add logic to this function so that it removes the ingredient with the given id from the list.
 
-    //EXAMPLE CODE:
-    const newIngredientList = ingredientList.filter(
-      (ingredient) => ingredient.id !== id
-    );
+    //EXAMPLE SOLUTION:
+    const newIngredientList = ingredientList.filter((ingredient) => ingredient.id !== id);
     setIngredientList(newIngredientList);
   };
 
+  
   useEffect(() => {
+    //This useEffect will run when the component mounts and makes sure we have atleast one ingredient in the list.
     if (ingredientList.length === 0) {
       setIngredientList([
         {
@@ -151,10 +142,32 @@ const IngredientList = () => {
         },
       ]);
     } else {
-      calculatePercentages();
+      calculatePercentages(ingredientList);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  //Helper function that handles the change of an input fields.
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    e.preventDefault();
+    const updatedIngredientList = ingredientList.map((ingredient) => {
+      if (ingredient.id === id) {
+        let ingredientCopy = { ...ingredient };
+        if (typeof ingredientCopy[e.target.name as IngredientKeys] === "string") {
+          return { ...ingredientCopy, [e.target.name]: e.target.value };
+        } else {
+          return { ...ingredientCopy, [e.target.name]: Number(e.target.value) };
+        }
+      }
+      return ingredient;
+    });
+
+    if (e.target.name === "name") {
+      setIngredientList(updatedIngredientList);
+      return;
+    }
+    id === 0 ? calculateWeights(updatedIngredientList) : calculatePercentages(updatedIngredientList);
+  };
 
   return (
     <>
