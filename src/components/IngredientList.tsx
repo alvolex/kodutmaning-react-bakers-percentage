@@ -151,15 +151,13 @@ const IngredientList = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
     e.preventDefault();
     const updatedIngredientList = ingredientList.map((ingredient) => {
-      if (ingredient.id === id) {
-        let ingredientCopy = { ...ingredient };
-        if (typeof ingredientCopy[e.target.name as IngredientKeys] === "string") {
-          return { ...ingredientCopy, [e.target.name]: e.target.value };
-        } else {
-          return { ...ingredientCopy, [e.target.name]: Number(e.target.value) };
-        }
+      if (ingredient.id !== id) {return ingredient;}
+      
+      if(typeof ingredient[e.target.name as IngredientKeys] === "string") {
+        return { ...ingredient, [e.target.name]: e.target.value };
+      } else {
+        return { ...ingredient, [e.target.name]: Number(e.target.value) };
       }
-      return ingredient;
     });
 
     if (e.target.name === "name") {
